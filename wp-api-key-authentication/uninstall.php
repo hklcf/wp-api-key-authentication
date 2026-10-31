@@ -10,4 +10,4 @@ $wpdb->query(
         $wpdb->esc_like('wp_api_key_') . '%'
     )
 );
-delete_option('ytaka_settings');
+delete_option('wpaka_settings');
