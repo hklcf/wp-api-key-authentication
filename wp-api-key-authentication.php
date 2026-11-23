@@ -3,7 +3,7 @@
  * Plugin Name: WP API Key Authentication
  * Plugin URI: https://github.com/hklcf/wp-api-key-authentication
  * Description: API key authentication for the WordPress REST API. Keys are tied to a WordPress user, stored only as bcrypt hashes, and shown once. By default every REST request requires a key; admins can open public reads or allowlist selected GET routes instead.
- * Version: 1.1.2
+ * Version: 1.1.3
  * Author: HKLCF
  * Author URI: https://github.com/hklcf
  * License: GPLv2 or later
@@ -245,6 +245,31 @@ function wpaka_rest_authentication_errors($result) {
     return $result;
 }
 add_filter('rest_authentication_errors', 'wpaka_rest_authentication_errors', 20);
+
+// oEmbed discovery links live in this plugin's territory: they
+// advertise the /wp-json/oembed/1.0/embed endpoint, and this
+// plugin decides whether anonymous visitors can reach it. When
+// it blocks oEmbed, remove the links (and the host script) so the
+// HTML does not advertise an endpoint that only returns 401.
+// WP Site Hardening removes them for its own part when its REST
+// mode blocks anonymous REST, so the links come back only when
+// both plugins let oEmbed through.
+function wpaka_maybe_remove_oembed_discovery_links() {
+    $settings = wpaka_get_settings();
+    $mode = isset($settings['access_mode']) ? $settings['access_mode'] : 'open';
+    $public = false;
+    if ($mode === 'open') {
+        $public = true;
+    } elseif ($mode === 'allowlist') {
+        $routes = isset($settings['public_routes']) ? preg_split("/\r\n|\r|\n/", $settings['public_routes']) : array();
+        $public = wpaka_route_is_public('/oembed/1.0/embed', $routes);
+    }
+    if (!$public) {
+        remove_action('wp_head', 'wp_oembed_add_discovery_links');
+        remove_action('wp_head', 'wp_oembed_add_host_js');
+    }
+}
+add_action('init', 'wpaka_maybe_remove_oembed_discovery_links');
 
 function wpaka_register_admin_menu() {
     add_menu_page(
