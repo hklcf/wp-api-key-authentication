@@ -3,7 +3,7 @@
  * Plugin Name: WP API Key Authentication
  * Plugin URI: https://github.com/hklcf/wp-api-key-authentication
  * Description: API key authentication for the WordPress REST API. Keys are tied to a WordPress user, stored only as bcrypt hashes, and shown once. By default every REST request requires a key; admins can open public reads or allowlist selected GET routes instead.
- * Version: 1.1.0
+ * Version: 1.1.1
  * Author: HKLCF
  * Author URI: https://github.com/hklcf
  * License: GPLv2 or later
@@ -23,30 +23,8 @@ function wpaka_default_settings() {
         'access_mode' => 'require_all',
         'public_routes' => "/wp/v2\n/wp/v2/posts\n/wp/v2/posts/*\n/wp/v2/pages\n/wp/v2/pages/*\n/wp/v2/media\n/wp/v2/media/*\n/wp/v2/categories\n/wp/v2/categories/*\n/wp/v2/tags\n/wp/v2/tags/*\n/wp/v2/search",
         'allow_x_api_key' => 1,
-        'disable_xmlrpc' => 0,
     );
 }
-
-function wpaka_xmlrpc_enabled($enabled) {
-    $settings = wpaka_get_settings();
-    return empty($settings['disable_xmlrpc']) ? $enabled : false;
-}
-add_filter('xmlrpc_enabled', 'wpaka_xmlrpc_enabled');
-
-function wpaka_xmlrpc_methods($methods) {
-    $settings = wpaka_get_settings();
-    return empty($settings['disable_xmlrpc']) ? $methods : array();
-}
-add_filter('xmlrpc_methods', 'wpaka_xmlrpc_methods');
-
-function wpaka_remove_pingback_header($headers) {
-    $settings = wpaka_get_settings();
-    if (!empty($settings['disable_xmlrpc'])) {
-        unset($headers['X-Pingback']);
-    }
-    return $headers;
-}
-add_filter('wp_headers', 'wpaka_remove_pingback_header');
 
 function wpaka_get_settings() {
     $saved = get_option(WPAKA_SETTINGS_OPTION, array());
@@ -308,12 +286,10 @@ function wpaka_render_admin_page() {
         }
         $routes = isset($_POST['wpaka_public_routes']) ? sanitize_textarea_field(wp_unslash($_POST['wpaka_public_routes'])) : '';
         $allow_x = isset($_POST['wpaka_allow_x_api_key']) ? 1 : 0;
-        $disable_xmlrpc = isset($_POST['wpaka_disable_xmlrpc']) ? 1 : 0;
         update_option(WPAKA_SETTINGS_OPTION, array(
             'access_mode' => $mode,
             'public_routes' => $routes,
             'allow_x_api_key' => $allow_x,
-            'disable_xmlrpc' => $disable_xmlrpc,
         ));
         $settings = wpaka_get_settings();
         $notice = 'Settings saved.';
@@ -387,6 +363,7 @@ function wpaka_render_admin_page() {
     $users = get_users(array('capability' => 'edit_posts', 'orderby' => 'display_name'));
     echo '<div class="wrap"><h1>Manage API Keys</h1>';
     echo '<p>Keys are tied to a WordPress user. A valid Bearer key signs requests in as that user, so reads and post creation use that user\'s permissions. By default every REST request requires a key. Normal website browsing is not affected: this only controls the REST API.</p>';
+    echo '<div class="notice notice-info"><p><strong>Tip:</strong> to also disable XML-RPC, disable feeds, fully disable the REST API, or hide wp-login.php behind a custom login URL, install <a href="https://github.com/hklcf/wp-site-hardening" target="_blank" rel="noopener">WP Site Hardening</a> (same author, download it from GitHub). This plugin only controls API-key authentication for the REST API.</p></div>';
     if ($notice) {
         echo '<div class="notice notice-info"><p>' . esc_html($notice) . '</p></div>';
     }
@@ -404,8 +381,6 @@ function wpaka_render_admin_page() {
     echo '<tr><th scope="row"><label for="wpaka_public_routes">Public routes (allowlist mode only)</label></th><td><textarea name="wpaka_public_routes" id="wpaka_public_routes" rows="10" cols="50" class="large-text code">' . esc_textarea($settings['public_routes']) . '</textarea>';
     echo '<p class="description">One route per line. A line ending in * matches everything under it, for example /wp/v2/posts/* matches a single post. Only GET requests to these routes are public in allowlist mode.</p></td></tr>';
     echo '<tr><th scope="row">X-API-Key header</th><td><label><input type="checkbox" name="wpaka_allow_x_api_key" value="1"' . checked($settings['allow_x_api_key'], 1, false) . ' /> Allow X-API-Key as well as Authorization: Bearer</label></td></tr>';
-    echo '<tr><th scope="row">XML-RPC</th><td><label><input type="checkbox" name="wpaka_disable_xmlrpc" value="1"' . checked($settings['disable_xmlrpc'], 1, false) . ' /> Disable XML-RPC</label>';
-    echo '<p class="description">Off by default. When on, XML-RPC authentication and methods are blocked and the X-Pingback header is removed. Jetpack, old mobile apps and pingbacks will stop working. This does not affect the REST API, and it is not a server-level block: xmlrpc.php itself is still reachable, so use server configuration as well for a hard block.</p></td></tr>';
     echo '</table>';
     submit_button('Save Settings', 'primary', 'wpaka_save_settings');
     echo '</form>';
