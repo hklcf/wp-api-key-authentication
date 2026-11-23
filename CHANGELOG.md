@@ -4,6 +4,17 @@ All notable changes to WP API Key Authentication are recorded here. This
 is the only place the full version history is kept; `README.md` only
 points here.
 
+## 1.1.3 — 2026-11-24
+
+- This plugin now removes the oEmbed discovery links (and the
+  host script) from the page head itself whenever it blocks
+  oEmbed — in `require_all` mode, or in allowlist mode without
+  a pattern matching `/oembed/1.0/embed`. Deciding whether
+  oEmbed is public is this plugin's job, not WP Site
+  Hardening's: that plugin only judges its own REST mode now.
+  Neither plugin reads the other's settings, so the links are
+  shown only when both let oEmbed through.
+
 ## 1.1.2 — 2026-11-24
 
 - Added `/oembed/1.0/embed` to the default allowlist, so oEmbed embeds
