@@ -2,8 +2,8 @@
 /**
  * Plugin Name: WP API Key Authentication
  * Plugin URI: https://github.com/hklcf/wp-api-key-authentication
- * Description: API key authentication for the WordPress REST API. Keys are tied to a WordPress user, stored only as bcrypt hashes, and shown once. By default every REST request requires a key; admins can open public reads or allowlist selected GET routes instead.
- * Version: 1.1.3
+ * Description: API key authentication for the WordPress REST API. Keys are tied to a WordPress user, stored only as bcrypt hashes, and shown once. By default every REST request requires authentication (an API key, a login cookie, or another WordPress authentication method); admins can open public reads or allowlist selected GET routes instead.
+ * Version: 1.1.4
  * Author: HKLCF
  * Author URI: https://github.com/hklcf
  * License: GPLv2 or later
@@ -387,7 +387,7 @@ function wpaka_render_admin_page() {
     $keys = wpaka_list_keys(WPAKA_PREFIX);
     $users = get_users(array('capability' => 'edit_posts', 'orderby' => 'display_name'));
     echo '<div class="wrap"><h1>Manage API Keys</h1>';
-    echo '<p>Keys are tied to a WordPress user. A valid Bearer key signs requests in as that user, so reads and post creation use that user\'s permissions. By default every REST request requires a key. Normal website browsing is not affected: this only controls the REST API.</p>';
+    echo '<p>Keys are tied to a WordPress user. A valid Bearer key signs requests in as that user, so reads and post creation use that user\'s permissions. By default every REST request must be authenticated. Normal website browsing is not affected: this only controls the REST API.</p>';
     echo '<div class="notice notice-info"><p><strong>Tip:</strong> to also disable XML-RPC, disable feeds, fully disable the REST API, or hide wp-login.php behind a custom login URL, install <a href="https://github.com/hklcf/wp-site-hardening" target="_blank" rel="noopener">WP Site Hardening</a> (same author, download it from GitHub). This plugin only controls API-key authentication for the REST API.</p></div>';
     if ($notice) {
         echo '<div class="notice notice-info"><p>' . esc_html($notice) . '</p></div>';
@@ -400,9 +400,9 @@ function wpaka_render_admin_page() {
     echo '<table class="form-table">';
     echo '<tr><th scope="row">Public REST API access</th><td>';
     echo '<label><input type="radio" name="wpaka_access_mode" value="open"' . checked($settings['access_mode'], 'open', false) . ' /> Public read stays public</label><br />';
-    echo '<label><input type="radio" name="wpaka_access_mode" value="require_all"' . checked($settings['access_mode'], 'require_all', false) . ' /> Require a key for every REST request (default)</label><br />';
-    echo '<label><input type="radio" name="wpaka_access_mode" value="allowlist"' . checked($settings['access_mode'], 'allowlist', false) . ' /> Require a key, except GET requests to the routes listed below</label>';
-    echo '<p class="description">Require a key for every request also blocks unauthenticated reads, so any public app or front-end that reads this site through the REST API will stop working until it sends a key. Requests already signed in with a cookie or another WordPress authentication method are not blocked by these modes.</p></td></tr>';
+    echo '<label><input type="radio" name="wpaka_access_mode" value="require_all"' . checked($settings['access_mode'], 'require_all', false) . ' /> Require authentication for every REST request (default)</label><br />';
+    echo '<label><input type="radio" name="wpaka_access_mode" value="allowlist"' . checked($settings['access_mode'], 'allowlist', false) . ' /> Require authentication, except GET requests to the routes listed below</label>';
+    echo '<p class="description">Every request must be authenticated — with an API key, a login cookie, or another WordPress authentication method. Unauthenticated reads are blocked, so any public app or front-end that reads this site through the REST API will stop working until it sends a key. Logged-in users are not affected.</p></td></tr>';
     echo '<tr><th scope="row"><label for="wpaka_public_routes">Public routes (allowlist mode only)</label></th><td><textarea name="wpaka_public_routes" id="wpaka_public_routes" rows="10" cols="50" class="large-text code">' . esc_textarea($settings['public_routes']) . '</textarea>';
     echo '<p class="description">One route per line. A line ending in * matches everything under it, for example /wp/v2/posts/* matches a single post. Only GET requests to these routes are public in allowlist mode.</p></td></tr>';
     echo '<tr><th scope="row">X-API-Key header</th><td><label><input type="checkbox" name="wpaka_allow_x_api_key" value="1"' . checked($settings['allow_x_api_key'], 1, false) . ' /> Allow X-API-Key as well as Authorization: Bearer</label></td></tr>';
