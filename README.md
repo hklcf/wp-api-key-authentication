@@ -8,7 +8,12 @@ stored only as bcrypt hashes and are shown once, when they are generated.
 
 ## Installation
 
-1. Copy the `wp-api-key-authentication` folder into `wp-content/plugins/`.
+1. In WordPress admin, go to Plugins > Add New > Upload Plugin and
+   choose the release zip (`wp-api-key-authentication-1.1.1.zip`).
+   Or install it by hand: the repository root is the plugin folder,
+   so copy its contents into a new
+   `wp-content/plugins/wp-api-key-authentication/` folder — there is
+   no subfolder to copy out of it.
 2. Activate **WP API Key Authentication** in WordPress admin.
 3. Open **API Keys** in the admin menu and generate a key for a user who
    can edit posts.
