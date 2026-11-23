@@ -47,15 +47,12 @@ by anonymous visitors, unless those readers are going to send a key.
 ## XML-RPC
 
 XML-RPC (`xmlrpc.php`) is separate from the REST API, and this plugin
-does not block it unless you turn this setting on. On the same
-**API Keys** admin page, tick **Disable XML-RPC** to block XML-RPC
-authentication and methods and to remove the X-Pingback header.
-
-It is off by default, because Jetpack, old mobile apps and pingbacks
-depend on XML-RPC. Turning it on will break those tools. It does not
-affect the REST API, and it does not delete or replace `xmlrpc.php`
-itself: the file is still reachable, so for a hard block, block it at
-server level as well (for example in `.htaccess` or Cloudflare).
+does not touch it. To disable XML-RPC, install
+[WP Site Hardening](https://github.com/hklcf/wp-site-hardening)
+(same author, download it from GitHub), which disables XML-RPC
+(filter + hard 403 + header/link removal) along with feeds, the REST
+API and the default login URL. The Disable XML-RPC setting this plugin
+used to have was removed in 1.1.1 — see `CHANGELOG.md`.
 
 ## Per-key options
 
@@ -92,6 +89,18 @@ server level as well (for example in `.htaccess` or Cloudflare).
   the internet, keep a firewall or rate limiter in front of it.
 
 ## Changelog
+
+Full history is in `CHANGELOG.md`.
+
+### 1.1.1
+
+- Removed the Disable XML-RPC setting and all of its code. XML-RPC is
+  now handled by [WP Site Hardening](https://github.com/hklcf/wp-site-hardening)
+  (same author) instead. If you had it on, switch on XML-RPC in
+  WP Site Hardening to keep the same protection.
+- Settings page now suggests installing WP Site Hardening, with a link
+  to its GitHub page.
+- Added `CHANGELOG.md`.
 
 ### 1.1.0
 
