@@ -4,6 +4,16 @@ All notable changes to WP API Key Authentication are recorded here. This
 is the only place the full version history is kept; `README.md` only
 points here.
 
+## 1.1.2 — 2026-11-24
+
+- Added `/oembed/1.0/embed` to the default allowlist, so oEmbed embeds
+  of this site's posts work out of the box in allowlist mode. Only
+  the embed endpoint is public: `/oembed/1.0/proxy` stays behind a
+  key, because it fetches arbitrary external URLs. Sites already
+  running an older version keep their stored allowlist unchanged —
+  add the route by hand if you want it. In `require_all` mode
+  (the default) the allowlist is inactive, so nothing changes there.
+
 ## 1.1.1 — 2026-11-24
 
 - Removed the Disable XML-RPC setting and all of its code. XML-RPC is
