@@ -3,7 +3,7 @@
  * Plugin Name: WP API Key Authentication
  * Plugin URI: https://github.com/hklcf/wp-api-key-authentication
  * Description: API key authentication for the WordPress REST API. Keys are tied to a WordPress user, stored only as bcrypt hashes, and shown once. By default every REST request requires a key; admins can open public reads or allowlist selected GET routes instead.
- * Version: 1.1.1
+ * Version: 1.1.2
  * Author: HKLCF
  * Author URI: https://github.com/hklcf
  * License: GPLv2 or later
@@ -21,7 +21,7 @@ define('WPAKA_SETTINGS_OPTION', 'wpaka_settings');
 function wpaka_default_settings() {
     return array(
         'access_mode' => 'require_all',
-        'public_routes' => "/wp/v2\n/wp/v2/posts\n/wp/v2/posts/*\n/wp/v2/pages\n/wp/v2/pages/*\n/wp/v2/media\n/wp/v2/media/*\n/wp/v2/categories\n/wp/v2/categories/*\n/wp/v2/tags\n/wp/v2/tags/*\n/wp/v2/search",
+        'public_routes' => "/wp/v2\n/wp/v2/posts\n/wp/v2/posts/*\n/wp/v2/pages\n/wp/v2/pages/*\n/wp/v2/media\n/wp/v2/media/*\n/wp/v2/categories\n/wp/v2/categories/*\n/wp/v2/tags\n/wp/v2/tags/*\n/wp/v2/search\n/oembed/1.0/embed",
         'allow_x_api_key' => 1,
     );
 }
