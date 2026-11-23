@@ -1,7 +1,8 @@
 # Changelog
 
-All notable changes to WP API Key Authentication are recorded here.
-The full changelog also appears in `README.md`.
+All notable changes to WP API Key Authentication are recorded here. This
+is the only place the full version history is kept; `README.md` only
+points here.
 
 ## 1.1.1 — 2026-11-24
 
