@@ -4,6 +4,20 @@ All notable changes to WP API Key Authentication are recorded here. This
 is the only place the full version history is kept; `README.md` only
 points here.
 
+## 1.1.4 — 2026-11-24
+
+- Wording only, no behaviour change. The mode labels said
+  "Require a key for every REST request", which reads as if a
+  key is the only way in — but a login cookie (or another
+  WordPress authentication method) has always counted as
+  authentication too, and logged-in users were never blocked
+  (the block editor itself uses the REST API with cookie
+  authentication). The labels now say "Require authentication
+  for every REST request", and the description spells out that
+  every request must be authenticated — with an API key, a
+  login cookie, or another WordPress authentication method —
+  and that logged-in users are not affected.
+
 ## 1.1.3 — 2026-11-24
 
 - This plugin now removes the oEmbed discovery links (and the
